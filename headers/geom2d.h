@@ -372,6 +372,10 @@ namespace D2 {
         }
         Segment(const long double& x1, const long double& y1, const long double& x2, const long double& y2): p1(x1, y1), p2(x2, y2) {}
 
+        long double len() const {
+            return (p1 - p2).len();
+        }
+
         bool isZero() const {
             return p1 == p2;
         }
