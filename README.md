@@ -2,7 +2,7 @@
 
 # Namespase `D2` for 2D objects
 
-Located in `headers/geom2d.h`
+Located in [headers/geom2d.h](https://github.com/hts1238/geometry/blob/master/headers/geom2d.h)
 
 ## **D2::Point**
 
