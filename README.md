@@ -12,8 +12,8 @@ You can create `D2::Point` by the following ways:
 
 * by default: `D2::Point()` returns `(0, 0)` existen point,
 * by two `long double` coordinates: `D2::Point(long double x, long double y)` returns `(x, y)` existen point,
-* by one `bool` flag: `D2::Point(bool exist)` returns `(0, 0)` existen point if exist equal `true` and non-existen point otherwise,
-* by two `long double` coordinates and one `bool` flag: `D2::Point(long double x, long double y, bool exist)` returns `(x, y)` existen point if exist equal `true` and non-existen point otherwise.
+* by one `bool` flag: `D2::Point(bool exist)` returns `(0, 0)` existen point if `exist` equals `true` and non-existen point otherwise,
+* by two `long double` coordinates and one `bool` flag: `D2::Point(long double x, long double y, bool exist)` returns `(x, y)` existen point if `exist` equals `true` and non-existen point otherwise.
 
 Let `p` to be `D2::Point` then you can do following:
 
@@ -54,7 +54,7 @@ Let `a` to be `long double` then you can do following:
 You can create `D2::Line` by the following ways:
 
 * by default: `D2::Line()` returns `x - y = 0` line,
-* by three `long double` coordinates: `D2::Line(long double a, long double b, long double c)` returns `a*x + b*y + c = 0` line,
+* by three `long double` factors: `D2::Line(long double a, long double b, long double c)` returns `a*x + b*y + c = 0` line,
 * by two `D2::Point` points: `D2::Line(D2::Point p1, D2::Point p2)` returns line which contains points given.
 
 Let `l` to be `D2::Line` then you can do following:
@@ -76,9 +76,9 @@ There are `Ox` and `Oy` constant lines which correspond to the coordinate axes.
 
 You can create `D2::Circle` by the following ways:
 
-* by default: `D2::Circle()` returns circle with the center in (0, 0) point and radius equal 1,
-* by point and radius: `D2::Circle(D2::Point center, long double radius)` returns circle with the center in `center` point and radius equal `radius`,
-* by three numbers: `D2::Circle(long double x, long double y, long double r)` returns circle with the center in `(x, y)` point and radius equal `r`.
+* by default: `D2::Circle()` returns circle with the center in `(0, 0)` point and the radius equals `1`,
+* by point and radius: `D2::Circle(D2::Point center, long double radius)` returns circle with the center in `center` point and the radius equals `radius`,
+* by three numbers: `D2::Circle(long double x, long double y, long double r)` returns circle with the center in `(x, y)` point and the radius equals `r`.
 
 ## **D2::Segment**
 
@@ -87,7 +87,7 @@ You can create `D2::Circle` by the following ways:
 You can create `D2::Segment` by the following ways:
 
 * by default: `D2::Segment()` returns segment from (0, 0) point to (1, 1) point,
-* by two points: `D2::Circle(D2::Point p1, D2::Point p1)` returns segment from `p1` point to `p2` point.
+* by two endpoints: `D2::Circle(D2::Point p1, D2::Point p1)` returns segment from `p1` point to `p2` point.
 
 Let `s` to be `D2::Segment` then you can do following:
 
@@ -100,7 +100,7 @@ Let `s` to be `D2::Segment` then you can do following:
 
 ### **D2::isCrossingLines**
 
-`D2::isCrossingLines` requires two `D2::Line`. Function checks if they intersect and returns `bool` *(`true` if they intersect and `false` otherwise). It's worth nothing that `false` is returned if the lines are equal.*
+`D2::isCrossingLines` requires two `D2::Line`. Function checks if they intersect and returns `bool` *(`true` if they intersect and `false` otherwise). It's worth nothing that `false` is always returned if the lines are equal.*
 
 ### **D2::crossLines**
 
