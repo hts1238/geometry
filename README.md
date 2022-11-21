@@ -11,8 +11,7 @@ Located in [headers/geom2d.h](https://github.com/hts1238/geometry/blob/master/he
 You can create `D2::Point` by the following ways:
 
 * by default: `D2::Point()` returns `(0, 0)` existen point,
-* by two `long double` coordinates: `D2::Point(long double x, long double y)` returns `(x, y)` existen point,
-* by one `bool` flag: `D2::Point(bool exist)` returns `(0, 0)` existen point if `exist` equals `true` and non-existen point otherwise,
+* by two `long double` coordinates: `D2::Point(long double x, long double y)` returns `(x, y)` existen point,<!--* by one `bool` flag: `D2::Point(bool exist)` returns `(0, 0)` existen point if `exist` equals `true` and non-existen point otherwise,-->
 * by two `long double` coordinates and one `bool` flag: `D2::Point(long double x, long double y, bool exist)` returns `(x, y)` existen point if `exist` equals `true` and non-existen point otherwise.
 
 Let `p` to be `D2::Point` then you can do following:

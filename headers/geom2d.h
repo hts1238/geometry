@@ -10,9 +10,9 @@ namespace D2 {
     const long double pi = acos(-1);
     const long double Eps = 1e-9;
 
-    const string __beg__ = "(", __sep__ = ", ", __end__ = ");";
-    const string __pointDescription__ = "Point";
-    const string __lineDescription__ = "Line";
+    string __beg__ = "(", __sep__ = ", ", __end__ = ");";
+    string __pointDescription__ = "Point";
+    string __lineDescription__ = "Line";
 
     int sgn(const long double& a) {
         if (a > Eps) return 1;
@@ -20,99 +20,18 @@ namespace D2 {
         return 0;
     }
 
+    float toDegrees(const float& radians) {
+        return radians * 180.0 / pi;
+    }
+
     struct Point {
         long double x, y;
-        bool ex = true;
+        bool ex;
         Point() : x(0), y(0), ex(true) {};
-        Point(long double _x, long double _y) : x(_x), y(_y), ex(true) {};
-        Point(bool exist): x(0), y(0), ex(exist) {};
-        Point(long double _x, long double _y, bool exist) : x(_x), y(_y), ex(exist) {};
+        Point(long double x, long double y) : x(x), y(y), ex(true) {};
+        //Point(bool exist): x(0), y(0), ex(exist) {};
+        Point(long double x, long double y, bool exist) : x(x), y(y), ex(exist) {};
 
-        // Сложение векторов
-        Point operator + (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'D2::Point operator+ (const D2::Point&, const D2::Point&)'");
-            }
-            return Point(x + other.x, y + other.y);
-        }
-        // Вычитание векторов
-        Point operator - (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'D2::Point operator- (const D2::Point&, const D2::Point&)'");
-            }
-            return Point(x - other.x, y - other.y);
-        }
-        // Скалярное произведение векторов
-        long double operator * (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'long double operator* (const D2::Point&, const D2::Point&)'");
-            }
-            return x * other.x + y * other.y;
-        }
-        // Растягивание вектора
-        Point operator * (const long double& a) const {
-            if (!ex) {
-                throw logic_error("Error: Point does not exist in 'D2::Point operator* (const D2::Point&, const long double&)'");
-            }
-            return Point(x * a, y * a);
-        }
-        // Сжатие вектора
-        Point operator / (const long double& a) const {
-            if (!ex) {
-                throw logic_error("Error: Point does not exist in 'D2::Point operator/ (const D2::Point&, const long double&)'");
-            }
-            return Point(x / a, y / a);
-        }
-        // Векторное произведение векторов
-        long double operator % (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'long double operator% (const D2::Point&, const D2::Point&)'");
-            }
-            return x * other.y - y * other.x;
-        }
-        // Проверка на параллельность векторов
-        bool operator || (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator|| (const D2::Point&, const D2::Point&)'");
-            }
-            return this->isZero() || other.isZero() || abs(x * other.y - other.x * y) < Eps;
-        }
-        bool operator == (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator== (const D2::Point&, const D2::Point&)'");
-            }
-            return abs(x - other.x) < Eps && abs(y - other.y) < Eps;
-        }
-        bool operator != (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator!= (const D2::Point&, const D2::Point&)'");
-            }
-            return !(*this == other);
-        }
-        bool operator < (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator< (const D2::Point&, const D2::Point&)'");
-            }
-            return x - other.x < -Eps || (abs(x - other.x) < Eps && y - other.y < -Eps);
-        }
-        bool operator <= (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator<= (const D2::Point&, const D2::Point&)'");
-            }
-            return *this < other || *this == other;
-        }
-        bool operator > (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator> (const D2::Point&, const D2::Point&)'");
-            }
-            return !(*this < other) && !(*this == other);
-        }
-        bool operator >= (const Point& other) const {
-            if (!ex || !other.ex) {
-                throw logic_error("Error: Point does not exist in 'bool operator>= (const D2::Point&, const D2::Point&)'");
-            }
-            return !(*this < other);
-        }
         // Длина вектора
         long double len() const {
             if (!ex) {
@@ -120,13 +39,15 @@ namespace D2 {
             }
             return sqrt(x * x + y * y);
         }
+        
         // Длина вектора в квадрате
         long double len2() const {
             if (!ex) {
                 throw logic_error("Error: Point does not exist in 'long double D2::Point::len2() const'");
             }
             return x * x + y * y;
-        } 
+        }
+        
         // Поворот вектора на a радиан(!) (против часовой стрелки)
         Point rotate_rad(const long double& a) const {
             if (!ex) {
@@ -134,6 +55,7 @@ namespace D2 {
             }
             return Point(x*cos(a)-y*sin(a), x*sin(a)+y*cos(a));
         }
+        
         // Поворот вектора на a градусов(!) (против часовой стрелки)
         Point rotate(const long double& a) const {
             if (!ex) {
@@ -141,32 +63,10 @@ namespace D2 {
             }
             return this->rotate_rad(a * pi / 180);
         }
+        
         // Угол поворота до вектора (в радианах против часовой стрелки) (-pi; pi]
-        float getAngle(const Point& p) const {
-            if (!ex || !p.ex) {
-                throw logic_error("Error: Point does not exist in 'float D2::Point::getAngle(const D2::Point&) const'");
-            }
-            long double len1 = this->len();
-            long double len2 = p.len();
-
-            if (abs(len1 * len2) < Eps) {
-                return 0;
-            }
-
-            long double sin = (*this % p) / len1 / len2;
-            int sin_sgn = sgn(sin);
-            int cos_sgn = sgn((*this * p) / this->len() / p.len());
-
-            if (cos_sgn == 0 && sin_sgn == 1) return pi/2;
-            if (cos_sgn == 0 && sin_sgn == -1) return -pi/2;
-            if (sin_sgn == 0 && cos_sgn == 1) return 0;
-            if (sin_sgn == 0 && cos_sgn == -1) return pi;
-
-            if (cos_sgn == 1) return asin(sin);
-            if (cos_sgn == -1) return pi*sin_sgn - asin(sin);
-
-            return 0;
-        }
+        float getAngle(const Point& p) const;
+        
         // Единичный вектор
         Point e() const {
             if (!ex) {
@@ -177,6 +77,7 @@ namespace D2 {
             Point w(x / len, y / len);
             return w;
         }
+        
         // Вектор, перпендикулярный данному
         Point n() const {
             if (!ex) {
@@ -197,7 +98,239 @@ namespace D2 {
         }
     }; // Struct Point
 
-    const Point __not_exist_point__(false);
+    const Point __not_exist_point__(0, 0, false);
+
+    Point operator + (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator+ (const D2::Point&, const D2::Point&)'");
+        }
+        return Point(p1.x + p2.x, p1.y + p2.y);
+    }
+
+    Point& operator += (Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point& operator+= (D2::Point&, const D2::Point&)'");
+        }
+
+        p1.x += p2.x;
+        p1.y += p2.y;
+
+        return p1;
+    }
+
+    Point operator + (const Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator+ (const D2::Point&, const long double&)'");
+        }
+        return Point(p.x + a, p.y + a);
+    }
+    
+    Point operator + (const long double& a, const Point& p) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator+ (const long double&, const D2::Point&)'");
+        }
+        return Point(p.x + a, p.y + a);
+    }
+    
+    Point& operator += (Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point& operator+= (D2::Point&, const long double&)'");
+        }
+
+        p.x += a;
+        p.y += a;
+
+        return p;
+    }
+
+    Point operator - (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator- (const D2::Point&, const D2::Point&)'");
+        }
+        return Point(p1.x - p2.x, p1.y - p2.y);
+    }
+
+    Point& operator -= (Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point& operator-= (D2::Point&, const D2::Point&)'");
+        }
+
+        p1.x -= p2.x;
+        p1.y -= p2.y;
+
+        return p1;
+    }
+
+    Point operator - (const Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator- (const D2::Point&, const long double&)'");
+        }
+        return Point(p.x - a, p.y - a);
+    }
+    
+    Point operator - (const long double& a, const Point& p) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator- (const D2::Point&, const D2::Point&)'");
+        }
+        return Point(p.x - a, p.y - a);
+    }
+    
+    Point& operator -= (Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point& operator-= (D2::Point&, const long double&)'");
+        }
+
+        p.x -= a;
+        p.y -= a;
+
+        return p;
+    }
+
+    long double operator * (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'long double operator* (const D2::Point&, const D2::Point&)'");
+        }
+        return p1.x * p2.x + p1.y * p2.y;
+    }
+
+    Point operator * (const Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator* (const D2::Point&, const long double&)'");
+        }
+        return Point(p.x * a, p.y * a);
+    }
+
+    Point operator * (const long double& a, const Point& p) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator* (const long double&, const D2::Point&)'");
+        }
+        return Point(p.x * a, p.y * a);
+    }
+
+    Point& operator *= (Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point& operator*= (D2::Point&, const long double&)'");
+        }
+
+        p.x *= a;
+        p.y *= a;
+
+        return p;
+    }
+
+    Point operator / (const Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator/ (const D2::Point&, const long double&)'");
+        }
+        if (abs(a) < Eps) {
+            return __not_exist_point__;
+        }
+        return Point(p.x / a, p.y / a);
+    }
+    
+    Point operator / (const long double& a, const Point& p) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point operator/ (const long double&, const D2::Point&)'");
+        }
+        if (abs(p.x) < Eps || abs(p.y) < Eps) {
+            return __not_exist_point__;
+        }
+        return Point(a / p.x, a / p.y);
+    }
+
+    Point& operator /= (Point& p, const long double& a) {
+        if (!p.ex) {
+            throw logic_error("Error: Point does not exist in 'D2::Point& operator/= (D2::Point&, const long double&)'");
+        }
+        if (abs(a) < Eps) {
+            p.ex = false;
+            return p;
+        }
+
+        p.x /= a;
+        p.y /= a;
+
+        return p;
+    }
+
+    long double operator % (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'long double operator% (const D2::Point&, const D2::Point&)'");
+        }
+        return p1.x * p2.y - p1.y * p2.x;
+    }
+
+    bool operator || (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator|| (const D2::Point&, const D2::Point&)'");
+        }
+        return p1.isZero() || p2.isZero() || abs(p1.x * p2.y - p2.x * p1.y) < Eps;
+    }
+    bool operator == (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator== (const D2::Point&, const D2::Point&)'");
+        }
+        return abs(p1.x - p2.x) < Eps && abs(p1.y - p2.y) < Eps;
+    }
+    bool operator != (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator!= (const D2::Point&, const D2::Point&)'");
+        }
+        return !(p1 == p2);
+    }
+    bool operator < (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator< (const D2::Point&, const D2::Point&)'");
+        }
+        return p1.x - p2.x < -Eps || (abs(p1.x - p2.x) < Eps && p1.y - p2.y < -Eps);
+    }
+    bool operator <= (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator<= (const D2::Point&, const D2::Point&)'");
+        }
+        return p1 < p2 || p1 == p2;
+    }
+    bool operator > (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator> (const D2::Point&, const D2::Point&)'");
+        }
+        return !(p1 < p2) && !(p1 == p2);
+    }
+    bool operator >= (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'bool operator>= (const D2::Point&, const D2::Point&)'");
+        }
+        return !(p1 < p2);
+    }
+    
+    float Point::getAngle(const Point& p) const {
+        if (!ex || !p.ex) {
+            throw logic_error("Error: Point does not exist in 'float D2::Point::getAngle(const D2::Point&) const'");
+        }
+        long double len1 = this->len();
+        long double len2 = p.len();
+
+        if (abs(len1 * len2) < Eps) {
+            return 0;
+        }
+
+        long double sin = (*this % p) / len1 / len2;
+        int sin_sgn = sgn(sin);
+        int cos_sgn = sgn((*this * p) / this->len() / p.len());
+
+        if (cos_sgn == 0 && sin_sgn == 1) return pi/2;
+        if (cos_sgn == 0 && sin_sgn == -1) return -pi/2;
+        if (sin_sgn == 0 && cos_sgn == 1) return 0;
+        if (sin_sgn == 0 && cos_sgn == -1) return pi;
+
+        if (cos_sgn == 1) return asin(sin);
+        if (cos_sgn == -1) return pi*sin_sgn - asin(sin);
+
+        return 0;
+    }
+
+
+
 
     ostream& operator << (ostream& cout, const Point& p) {
         if (p.exist()) {
