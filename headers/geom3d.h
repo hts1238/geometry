@@ -14,6 +14,16 @@ namespace D3 {
     string __lot__ = "xyz"; // [ default=xyz | xyz | numbers ]
     string __form_sep__ = " ", __form_sup__ = "";
 
+    int sgn(const long double& a) {
+        if (a > Eps) return 1;
+        if (a < -Eps) return -1;
+        return 0;
+    }
+
+    float toDegrees(const float& radians) {
+        return radians * 180.0 / pi;
+    }
+
     struct Point {
         long double x, y, z;
         bool ex;
@@ -21,64 +31,16 @@ namespace D3 {
         Point(long double x, long double y, long double z) : x(x), y(y), z(z), ex(true) {};
         Point(long double x, long double y, long double z, bool ex) : x(x), y(y), z(z), ex(ex) {};
 
-        //// Сложение векторов
-        //Point operator + (const Point& other) const {
-        //    return Point(x + other.x, y + other.y, z + other.z);
-        //}
-        //// Вычитание векторов
-        //Point operator - (const Point& other) const {
-        //    return Point(x - other.x, y - other.y, z - other.z);
-        //}
-        //// Скалярное произведение векторов
-        //long double operator * (const Point& other) const {
-        //    return x * other.x + y * other.y + z * other.z;
-        //}
-        //// Растягивание вектора
-        //Point operator * (const long double& a) const {
-        //    return Point(x * a, y * a, z * a);
-        //}
-        //// Сжатие вектора
-        //Point operator / (const long double& a) const {
-        //    return Point(x / a, y / a, z / a);
-        //}
-        //// Векторное произведение векторов
-        //Point operator % (const Point& other) const {
-        //    return Point(
-        //        y * other.z - z * other.y,
-        //        z * other.x - z * other.x,
-        //        x * other.y - y * other.x
-        //    );
-        //}
-        //// Проверка на параллельность векторов
-        //bool operator || (const Point& other) const {
-        //    return this->isZero() || other.isZero() || (*this % other).len() < Eps;
-        //}
-        //bool operator == (const Point& other) const {
-        //    return abs(x - other.x) < Eps && abs(y - other.y) < Eps && abs(z - other.z) < Eps;
-        //}
-        //bool operator != (const Point& other) const {
-        //    return !(*this == other);
-        //}
-        //bool operator < (const Point& other) const {
-        //    return x - other.x < -Eps || (abs(x - other.x) < Eps && y - other.y < -Eps) || (abs(x - other.x) < Eps && abs(y - other.y) < Eps && z - other.z < -Eps);
-        //}
-        //bool operator <= (const Point& other) const {
-        //    return *this < other || *this == other;
-        //}
-        //bool operator > (const Point& other) const {
-        //    return !(*this < other) && !(*this == other);
-        //}
-        //bool operator >= (const Point& other) const {
-        //    return !(*this < other);
-        //}
         // Длина вектора
         long double len() const {
             return sqrt(x * x + y * y + z * z);
         }
+
         // Длина вектора в квадрате
         long double len2() const {
             return x * x + y * y + z * z;
-        } 
+        }
+
         //// Поворот вектора на a радиан(!) (против часовой стрелки)
         //Point rotate_rad(const long double& a) const {
         //    return Point(x*cos(a)-y*sin(a), x*sin(a)+y*cos(a));
@@ -87,13 +49,17 @@ namespace D3 {
         //Point rotate(const long double& a) const {
         //    return this->rotate_rad(a * pi / 180);
         //}
+        
         // Единичный вектор
         Point e() const {
             if (this->isZero()) return Point();
             long double len = this->len();
             return Point(x / len, y / len, z / len);
         }
-        // TODO: test
+
+        float getAngle(const Point& p) const;
+
+        // TODO: test D3::Point::n()
         // Вектор, перпендикулярный данному
         Point n() const {
             return Point(-y - z, x, x);
@@ -284,7 +250,7 @@ namespace D3 {
         //return Point(p1.y * p2.z - p1.z * p2.y, p1.z * p2.x - p1.x * p2.z, p1.x * p2.y - p1.y * p2.z);
     }
 
-    //TODO: test
+    //TODO: test operator||(D3::Point, D3::Point)
     bool operator || (const Point& p1, const Point& p2) {
         if (!p1.ex || !p2.ex) {
             throw logic_error("Error: Point does not exist in 'bool operator|| (const D2::Point&, const D2::Point&)'");
@@ -327,6 +293,32 @@ namespace D3 {
         }
         return !(p1 < p2);
     }
+    
+    float Point::getAngle(const Point& p) const {
+        if (!ex || !p.ex) {
+            throw logic_error("Error: Point does not exist in 'float D3::Point::getAngle(const D3::Point&) const'");
+        }
+        long double len1 = this->len();
+        long double len2 = p.len();
+
+        if (abs(len1 * len2) < Eps) {
+            return 0;
+        }
+
+        long double sin = (*this % p).len() / len1 / len2;
+        int sin_sgn = sgn(sin);
+        int cos_sgn = sgn((*this * p) / this->len() / p.len());
+
+        if (cos_sgn == 0 && sin_sgn == 1) return pi / 2;
+        if (cos_sgn == 0 && sin_sgn == -1) return -pi / 2;
+        if (sin_sgn == 0 && cos_sgn == 1) return 0;
+        if (sin_sgn == 0 && cos_sgn == -1) return pi;
+
+        if (cos_sgn == 1) return asin(sin);
+        if (cos_sgn == -1) return pi * sin_sgn - asin(sin);
+
+        return 0;
+    }
 
     ostream& operator << (ostream& cout, const Point& p) {
         cout << __beg__ << p.x << __sep__ << p.y << __sep__ << p.z << __end__;
@@ -349,15 +341,23 @@ namespace D3 {
         //    d(-a*p1.x -b*p1.y -c*p1.z)
         //{};
 
-        /*long double calc(const Point& p) const {
-            return a * p.x + b * p.y + c;
+        long double calc(const Point& p) const {
+            return a * p.x + b * p.y + c * p.z + d;
+        }
+
+        bool isContain(const Point& p) const {
+            return abs(calc(p)) < Eps;
         }
 
         Point n() const {
             return Point(a, b, c);
         }
 
-        Point guideVector() const {
+        bool exist() const {
+            return abs(a) < Eps && abs(b) < Eps && abs(c) < Eps;
+        }
+
+        /*Point guideVector() const {
             return Point(b, -a);
         }
 
@@ -369,6 +369,24 @@ namespace D3 {
             return abs(a * o.b - o.a * b) < Eps;
         }*/
     }; // Struct Plane
+
+    // TODO: test D3::distFromPointToPlane
+    long double distFromPointToPlane(const Point& point, const Plane& plane) {
+        if (!plane.exist()) {
+            throw logic_error("Error: Plane does not exist in 'long double D3::distFromPointToPlane(D3::Point, D3::Plane)'");
+        }
+
+        return abs(point * plane.n() + plane.d) / plane.n().len();
+    }
+
+    // TODO: test D3::AngleBetweenPlanes
+    float angleBetweenPlanes(const Plane& p1, const Plane& p2) {
+        if (!p1.exist() || !p2.exist()) {
+            throw logic_error("Error: PLane does not exist in 'float D3::angleBetweenPlanes(D3::Plane, D3::Plane)'");
+        }
+
+        return p1.n().getAngle(p2.n());
+    }
 
     ostream& operator << (ostream& cout, const Plane& l) {
         if (__lot__ == "numbers") {
