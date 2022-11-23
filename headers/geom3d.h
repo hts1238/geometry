@@ -12,7 +12,7 @@ namespace D3 {
 
     string __beg__ = "(", __sep__ = ";", __end__ = ")";
     string __lot__ = "xyz"; // [ default=xyz | xyz | numbers ]
-    string __form_sep__ = " ";
+    string __form_sep__ = " ", __form_sup__ = "";
 
     struct Point {
         long double x, y, z;
@@ -93,10 +93,11 @@ namespace D3 {
             long double len = this->len();
             return Point(x / len, y / len, z / len);
         }
-        //// Вектор, перпендикулярный данному
-        //Point n() const {
-        //    return Point(y, -x);
-        //}
+        // TODO: test
+        // Вектор, перпендикулярный данному
+        Point n() const {
+            return Point(-y - z, x, x);
+        }
         bool isZero() const {
             return abs(x) < Eps && abs(y) < Eps && abs(z) < Eps;
         }
@@ -263,12 +264,25 @@ namespace D3 {
         return p;
     }
 
-    //long double operator % (const Point& p1, const Point& p2) {
-    //    if (!p1.ex || !p2.ex) {
-    //        throw logic_error("Error: Point does not exist in 'long double operator% (const D2::Point&, const D2::Point&)'");
-    //    }
-    //    return p1.x * p2.y - p1.y * p2.x;
-    //}
+    Point operator % (const Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'long double operator% (const D2::Point&, const D2::Point&)'");
+        }
+        return Point(p1.y * p2.z - p1.z * p2.y, p1.z * p2.x - p1.x * p2.z, p1.x * p2.y - p1.y * p2.z);
+    }
+
+    Point& operator %= (Point& p1, const Point& p2) {
+        if (!p1.ex || !p2.ex) {
+            throw logic_error("Error: Point does not exist in 'long double operator% (const D2::Point&, const D2::Point&)'");
+        }
+
+        Point n(p1.y * p2.z - p1.z * p2.y, p1.z * p2.x - p1.x * p2.z, p1.x * p2.y - p1.y * p2.z);
+        p1 = n;
+        
+        return p1;
+
+        //return Point(p1.y * p2.z - p1.z * p2.y, p1.z * p2.x - p1.x * p2.z, p1.x * p2.y - p1.y * p2.z);
+    }
 
     //TODO: test
     bool operator || (const Point& p1, const Point& p2) {
@@ -363,68 +377,122 @@ namespace D3 {
         else {
             bool isPrinted = false;
 
+            // ===== FOR X =====
             if (l.a == 0 && l.b == 0 && l.c == 0 && l.d == 0) {
                 cout << 0;
                 isPrinted = true;
             }
             else if (l.a != 0) {
-                if (l.a != 1) {
-                    cout << l.a;
+                if (l.a == -1) {
+                    cout << "-";
+                }
+                if (l.a != 1 && l.a != -1) {
+                    cout << l.a << __form_sup__;
                 }
                 cout << "x";
                 isPrinted = true;
             }
+            // =================
 
-
-            if (l.b < -Eps) {
+            // ===== FOR Y =====
+            if (l.b == 1) {
                 if (isPrinted) {
-                    cout << __form_sep__;
-                }
-                cout << l.b << "y";
-                isPrinted = true;
-            }
-            else if (l.b == 1) {
-                if (isPrinted) {
-                    cout << __form_sep__;
+                    cout << __form_sep__ << "+" << __form_sep__;
                 }
                 cout << "y";
+                isPrinted = true;
+            }
+            else if (l.b == -1) {
+                if (isPrinted) {
+                    cout << __form_sep__ << "-" << __form_sep__;
+                }
+                else {
+                    cout << "-";
+                }
+                cout << "y";
+                isPrinted = true;
+            }
+            else if (l.b < -Eps) {
+                if (isPrinted) {
+                    cout << __form_sep__ << "-" << __form_sep__ << -l.b;
+                }
+                else {
+                    cout << l.b;
+                }
+                cout << __form_sup__ << "y";
                 isPrinted = true;
             }
             else if (l.b > Eps) {
                 if (isPrinted) {
                     cout << __form_sep__ << "+" << __form_sep__;
                 }
-                cout << l.b << "y";
+                cout << l.b << __form_sup__ << "y";
                 isPrinted = true;
             }
+            // =================
 
-            if (l.c < -Eps) {
+            // ===== FOR Z =====
+            if (l.c == 1) {
                 if (isPrinted) {
-                    cout << __form_sep__;
-                }
-                cout << l.c << "z";
-                isPrinted = true;
-            }
-            else if (l.c == 1) {
-                if (isPrinted) {
-                    cout << __form_sep__;
+                    cout << __form_sep__ << "+" << __form_sep__;
                 }
                 cout << "z";
+                isPrinted = true;
+            }
+            else if (l.c == -1) {
+                if (isPrinted) {
+                    cout << __form_sep__ << "-" << __form_sep__;
+                }
+                else {
+                    cout << "-";
+                }
+                cout << "z";
+                isPrinted = true;
+            }
+            else if (l.c < -Eps) {
+                if (isPrinted) {
+                    cout << __form_sep__ << "-" << __form_sep__ << -l.c;
+                }
+                else {
+                    cout << l.c;
+                }
+                cout << __form_sup__ << "z";
                 isPrinted = true;
             }
             else if (l.c > Eps) {
                 if (isPrinted) {
                     cout << __form_sep__ << "+" << __form_sep__;
                 }
-                cout << l.c << "z";
+                cout << l.c << __form_sup__ << "z";
                 isPrinted = true;
             }
+            // =================
 
-            if (l.d < -Eps) {
+            // ===== FOR D =====
+            if (l.d == 1) {
                 if (isPrinted) {
-                    cout << __form_sep__;
+                    cout << __form_sep__ << "+" << __form_sep__;
                 }
-                cout << l.d;
+                cout << "1";
+                isPrinted = true;
+            }
+            else if (l.d == -1) {
+                if (isPrinted) {
+                    cout << __form_sep__ << "-" << __form_sep__;
+                }
+                else {
+                    cout << "-";
+                }
+                cout << "1";
+                isPrinted = true;
+            }
+            else if (l.d < -Eps) {
+                if (isPrinted) {
+                    cout << __form_sep__ << "-" << __form_sep__ << -l.d;
+                }
+                else {
+                    cout << l.d;
+                }
                 isPrinted = true;
             }
             else if (l.d > Eps) {
@@ -434,6 +502,8 @@ namespace D3 {
                 cout << l.d;
                 isPrinted = true;
             }
+            // =================
+
             cout << __form_sep__ << "=" << __form_sep__ << "0";
         }
         return cout;
