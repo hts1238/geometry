@@ -1,4 +1,4 @@
-# **Geometry by @futau**
+# **Geometry by [@futau](https://futau.t.me)**
 
 # Namespase `D2` for 2D objects
 
@@ -151,3 +151,5 @@ Let `s` to be `D2::Segment` then you can do following:
 
 <hr>
 © 2018-2022 Timur Khalikshin
+
+Contact: [Telegram](https://futau.t.me), [Email](mailto:hts1238@mail.ru)
