@@ -361,6 +361,18 @@ namespace D3 {
             return Point(b, -a);
         }
 
+        /*long double calc(const Point& p) const {
+            return a * p.x + b * p.y + c;
+        }
+
+        Point n() const {
+            return Point(a, b, c);
+        }
+
+        Point guideVector() const {
+            return Point(b, -a);
+        }
+
         bool operator == (const Plane& o) const {
             return abs(a * o.b - o.a * b) < Eps && abs(a * o.c - o.a * c) < Eps && abs(b * o.c - o.b * c) < Eps;
         }
