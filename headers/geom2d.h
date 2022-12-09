@@ -432,6 +432,16 @@ namespace D2 {
         return w;
     }
 
+    // Лежать ли точки по одну сторону от прямой (включая прямую)
+    bool isInSameSide(const Line& l, const Point& a, const Point& b) {
+        return l.calc(a) * l.calc(b) > -Eps;
+    }
+
+    // Лежат ли точки по одну сторону от прямой (не включая прямую)
+    bool isInSameSideExcluding(const Line& l, const Point& a, const Point& b) {
+        return l.calc(a) * l.calc(b) > Eps;
+    }
+
     struct Circle {
         Point center;
         long double radius;
@@ -485,16 +495,6 @@ namespace D2 {
         Point d1 = d.e() * c2.radius * cos_a;
         long double x = sqrt(c2.radius*c2.radius - d1.len()*d1.len());
         return make_pair(c2.center + d1 + d.n().e()*x, c2.center + d1 - d.n().e()*x);
-    }
-
-    // Лежать ли точки по одну сторону от прямой (включая прямую)
-    bool isInSameSide(const Line& l, const Point& a, const Point& b) {
-        return l.calc(a) * l.calc(b) > -Eps;
-    }
-
-    // Лежат ли точки по одну сторону от прямой (не включая прямую)
-    bool isInSameSideExcluding(const Line& l, const Point& a, const Point& b) {
-        return l.calc(a) * l.calc(b) > Eps;
     }
 
     struct Segment {
@@ -664,7 +664,9 @@ namespace D2 {
 
         Segment getSegmentAfter(int i) const {
             if (_size < 2) {
-                cerr << ">> Trying to getSegmentAfter while size equals " << _size << endl;
+                if (__debug__) {
+                    cerr << ">> Trying to getSegmentAfter while size equals " << _size << endl;
+                }
                 throw logic_error("Error: can not getSegmentAfter from D2::Polygon with the size less than 2");
             }
             unsigned int ind1 = _getIndex(i);
@@ -675,7 +677,9 @@ namespace D2 {
 
         Segment getSegmentBefore(int i) const {
             if (_size < 2) {
-                cerr << ">> Trying to getSegmentBefore while size equals " << _size << endl;
+                if (__debug__) {
+                    cerr << ">> Trying to getSegmentBefore while size equals " << _size << endl;
+                }
                 throw logic_error("Error: can not getSegmentBefore from D2::Polygon with the size less than 2");
             }
             unsigned int ind1 = _getIndex(i);
@@ -686,7 +690,9 @@ namespace D2 {
 
         long double squareSigned() const {
             if (_size < 3) {
-                cerr << "> Warning: trying to get square of polygon while size equals " << _size << endl;
+                if (__debug__) {
+                    cerr << ">> Warning: trying to get square of polygon while size equals " << _size << endl;
+                }
                 return 0;
             }
 
