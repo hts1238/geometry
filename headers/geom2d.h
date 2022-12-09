@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <deque>
 
 using namespace std;
 
@@ -10,9 +11,10 @@ namespace D2 {
     const long double pi = acos(-1);
     const long double Eps = 1e-9;
 
-    string __beg__ = "(", __sep__ = ", ", __end__ = ");";
-    string __pointDescription__ = "Point";
-    string __lineDescription__ = "Line";
+    string __beg__ = "(", __sep__ = ", ", __end__ = ")";
+    string __point_description__ = "Point";
+    string __line_description__ = "Line";
+    bool __debug__ = false;
 
     int sgn(const long double& a) {
         if (a > Eps) return 1;
@@ -334,7 +336,7 @@ namespace D2 {
 
     ostream& operator << (ostream& cout, const Point& p) {
         if (p.exist()) {
-            cout << __pointDescription__ << __beg__ << p.x << __sep__ << p.y << __end__;
+            cout << __point_description__ << __beg__ << p.x << __sep__ << p.y << __end__;
         }
         else {
             throw logic_error("Error: Point does not exist while trying to print (in 'std::ostream& operator<< (std::ostream&, const D2::Point&)')");
@@ -390,7 +392,7 @@ namespace D2 {
     const Line Oy(1, 0, 0);
 
     ostream& operator << (ostream& cout, const Line& l) {
-        cout << __lineDescription__ << __beg__ << l.a << __sep__ << l.b << __sep__ << l.c << __end__;
+        cout << __line_description__ << __beg__ << l.a << __sep__ << l.b << __sep__ << l.c << __end__;
         return cout;
     }
 
@@ -572,6 +574,134 @@ namespace D2 {
 
         return crossLines(s1.getLine(), s2.getLine());
     }
+
+    struct Polygon {
+      protected:
+        deque<Point> _points;
+        unsigned int _size;
+
+        unsigned int _getIndex(int i) const {
+            if (-i > (int)_size || i >= (int)_size) {
+                if (__debug__) {
+                    cerr << ">> Trying to access by index " << i << " while size equals " << _size << endl;
+                    if (-i > (int)_size) {
+                        cerr << ">> (-i > _size) returns true (out of range by the left side)" << endl;
+                    }
+                    if (i >= (int)_size) {
+                        cerr << ">> (i >= _size) returns true (out of range by the right side)" << endl;
+                    }
+                }
+                throw logic_error("Error: incorrect index in D2::Polygon");
+            }
+            if (i < 0) {
+                return _size + i;
+            }
+            return i;
+        }
+      public:
+        Polygon() : _points({{0, 0}, {0, 1}, {1, 1}, {1, 0}}), _size(4) {}
+
+        Point& operator[] (int i) {
+            return _points[_getIndex(i)];
+        }
+
+        const deque<Point>& points() const {
+            return _points;
+        }
+
+        unsigned int size() const {
+            return _size;
+        }
+
+        void push_back(const Point& point) {
+            _points.push_back(point);
+            ++_size;
+        }
+
+        Point pop_back() {
+            if (_size == 0) {
+                throw logic_error("Error: can not pop_back from empty D2::Polygon");
+            }
+
+            Point res = _points.back();
+            _points.pop_back();
+            --_size;
+            return move(res);
+        }
+
+        void push_front(const Point& point) {
+            _points.push_front(point);
+            ++_size;
+        }
+
+        Point pop_front() {
+            if (_size == 0) {
+                throw logic_error("Error: can not pop_back from empty D2::Polygon");
+            }
+
+            Point res = _points.front();
+            _points.pop_front();
+            --_size;
+            return move(res);
+        }
+
+        void insert_before(int i, const Point& point) {
+            _points.insert(_points.begin() + _getIndex(i), point);
+            ++_size;
+        }
+
+        void insert_after(int i, const Point& point) {
+            _points.insert(_points.begin() + _getIndex(i) + 1, point);
+            ++_size;
+        }
+
+        Point erase(int i) {
+            Point res = _points[_getIndex(i)];
+            _points.erase(_points.begin() + _getIndex(i));
+            --_size;
+            return move(res);
+        }
+
+        Segment getSegmentAfter(int i) const {
+            if (_size < 2) {
+                cerr << ">> Trying to getSegmentAfter while size equals " << _size << endl;
+                throw logic_error("Error: can not getSegmentAfter from D2::Polygon with the size less than 2");
+            }
+            unsigned int ind1 = _getIndex(i);
+            unsigned int ind2 = (ind1 + 1) % _size;
+
+            return Segment(_points[ind1], _points[ind2]);
+        }
+
+        Segment getSegmentBefore(int i) const {
+            if (_size < 2) {
+                cerr << ">> Trying to getSegmentBefore while size equals " << _size << endl;
+                throw logic_error("Error: can not getSegmentBefore from D2::Polygon with the size less than 2");
+            }
+            unsigned int ind1 = _getIndex(i);
+            unsigned int ind2 = ind1 == 0 ? _size - 1 : ind1 - 1;
+
+            return Segment(_points[ind2], _points[ind1]);
+        }
+
+        long double squareSigned() const {
+            if (_size < 3) {
+                cerr << "> Warning: trying to get square of polygon while size equals " << _size << endl;
+                return 0;
+            }
+
+            long double res = 0;
+            for (int i = -1; i < (int)_size - 1; ++i) {
+                res += _points[_getIndex(i)] % _points[_getIndex(i + 1)] / 2;
+            }
+
+            return res;
+        }
+
+        long double square() const {
+            return abs(this->squareSigned());
+        }
+    };
 }
 
 
