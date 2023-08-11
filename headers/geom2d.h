@@ -174,7 +174,7 @@ namespace D2 {
         if (!p.ex) {
             throw logic_error("Error: Point does not exist in 'D2::Point operator- (const D2::Point&, const D2::Point&)'");
         }
-        return Point(p.x - a, p.y - a);
+        return Point(a - p.x, a - p.y);
     }
     
     Point& operator -= (Point& p, const long double& a) {
